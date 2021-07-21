@@ -5,6 +5,8 @@ import gzip
 import tensorflow as tf
 from subprocess import Popen, PIPE
 
+tf.compat.v1.disable_eager_execution()
+
 MAX_LEN = 100
 emb_weight_file = "lstm2v_appcelerator_dim50.pkl"
 dict_file = "appcelerator.dict.pkl.gz"
