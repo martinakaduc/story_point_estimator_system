@@ -13,10 +13,12 @@ if __name__ == '__main__':
 
     if st.button('Estimate'):
         prediction = 0
-        print(descr)
+        
+        if title == "" or descr == "":
+            st.error('Please fill in all above fields!')
+        else:
+            with st.spinner(text='Estimating in progress...'):
+                prediction = deep_se_model.inference([title], [descr])[0][0]
+                st.success('Done')
 
-        with st.spinner(text='Estimating in progress...'):
-            prediction = deep_se_model.inference([title], [descr])[0][0]
-            st.success('Done')
-
-        st.header('Story points: %.1f' % prediction)
+            st.header('Story points: %.1f' % prediction)
