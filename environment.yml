@@ -1,7 +1,8 @@
 name: deepse-environment
 
 dependencies:
-  - python=3.6
-  - numpy=1.19.5
-  - tensorflow=1.14
-  - streamlit=0.84.2
+  - python=3.7
+  - pip:
+    - numpy==1.19.5
+    - tensorflow==1.14
+    - streamlit==0.84.2
