@@ -1,7 +1,7 @@
 import _pickle as cPickle
 import numpy as np
 import gzip
-
+import utils
 import tensorflow as tf
 from subprocess import Popen, PIPE
 
@@ -143,10 +143,15 @@ class DeepSE():
 
         title_emb, descr_emb = self.to_features([title_vec, descr_vec])
 
-        return self.sess.run(self.regres_layer, {self.title_emb: title_emb,
-                                                 self.descr_emb: descr_emb,
-                                                 self.title_mask: title_mask,
-                                                 self.descr_mask: descr_mask})
+        results = self.sess.run(self.regres_layer, {self.title_emb: title_emb,
+                                                    self.descr_emb: descr_emb,
+                                                    self.title_mask: title_mask,
+                                                    self.descr_mask: descr_mask})
+        return_sp = []
+        for sp in results:
+            return_sp.append(utils.nearest_fib(sp[0]))
+
+        return return_sp
 
 if __name__ == '__main__':
     title = "Test different versions of perf"

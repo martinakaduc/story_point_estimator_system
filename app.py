@@ -18,7 +18,7 @@ if __name__ == '__main__':
             st.error('Please fill in all above fields!')
         else:
             with st.spinner(text='Estimating in progress...'):
-                prediction = deep_se_model.inference([title], [descr])[0][0]
+                prediction = deep_se_model.inference([title], [descr])[0]
                 st.success('Done')
 
-            st.header('Story points: %.1f' % prediction)
+            st.header('Story points: %d' % int(prediction))
