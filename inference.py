@@ -8,9 +8,9 @@ from subprocess import Popen, PIPE
 tf.compat.v1.disable_eager_execution()
 
 MAX_LEN = 100
-emb_weight_file = "lstm2v_appcelerator_dim50.pkl"
-dict_file = "appcelerator.dict.pkl.gz"
-model_file = "titanium_lstm_highway_dim50_reginphid_prefixed_lm_poolmean.pb"
+emb_weight_file = "lstm2v_tpssoft_dim50.pkl"
+dict_file = "tpssoft.dict.pkl.gz"
+model_file = "kanoo_lstm_highway_dim50_reginphid_prefixed_lm_poolmean.pb"
 
 datasetDict = {
     'mesos': 'apache',
@@ -29,7 +29,8 @@ datasetDict = {
     'mulestudio': 'mulesoft',
     'springxd': 'spring',
     'talenddataquality': 'talendforge',
-    'talendesb': 'talendforge'
+    'talendesb': 'talendforge',
+    'kanoo': 'tpssoft'
 }
 
 class DeepSE():
