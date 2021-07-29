@@ -2,6 +2,7 @@ name: deepse-environment
 
 dependencies:
   - python=3.7
+  - pip
   - pip:
     - numpy==1.19.5
     - tensorflow==1.14
