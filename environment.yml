@@ -1,0 +1,12 @@
+name: deepse-environment
+
+dependencies:
+  - python=3.6
+  - pip
+  - pip:
+    - numpy==1.19.5
+    - tensorflow==1.14
+    - scikit-learn==0.24.2
+    - pandas==1.1.5
+    - streamlit==0.84.2
+    - protobuf==3.17.3
