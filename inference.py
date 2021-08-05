@@ -24,7 +24,10 @@ datasetDict = {
 
 class DeepSE():
     def __init__(self, project_name, max_len=MAX_LEN):
-        self.sess = tf.compat.v1.Session()
+        config = tf.compat.v1.ConfigProto()
+        config.gpu_options.allow_growth=True
+        
+        self.sess = tf.compat.v1.Session(config=config)
         self.tokenizer_cmd = ['perl', 'tokenizer.perl', '-l', 'en', '-q', '-']
         self.org_name = datasetDict[project_name]
 
