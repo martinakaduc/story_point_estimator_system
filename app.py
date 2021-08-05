@@ -1,15 +1,5 @@
 import streamlit as st
-import pandas as pd
-from inference import *
-import utils
-
-list_models = {}
-list_models_name = []
-record_columns = ["Issue Key", "Title", "Description", "Story Points"]
-
-for pname in datasetDict:
-    list_models_name.append(pname)
-    list_models[pname] = DeepSE(pname, max_len=MAX_LEN)
+from inference import list_models_name, get_result
 
 if __name__ == '__main__':
     st.set_page_config(page_title="Story Point Estimaton System", layout="wide")
@@ -29,15 +19,8 @@ if __name__ == '__main__':
             st.error('Please fill in all above fields!')
         else:
             with st.spinner(text='Estimating in progress...'):
-                for model_name in selected_models:
-                    sp, history = list_models[model_name].inference([title], [descr], return_history=True)
-                    prediction += sp[0]
-                    histories += history[0]
-
+                prediction, histories = get_result(title, descr, selected_models)
                 st.success('Done')
 
-            prediction = utils.nearest_fib(prediction / len(selected_models))
-            histories_df = pd.DataFrame(histories, columns=record_columns)
-
             st.header('Story points: %d' % prediction)
-            st.table(histories_df)
+            st.table(histories)
