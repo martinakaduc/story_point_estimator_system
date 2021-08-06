@@ -23,4 +23,6 @@ if __name__ == '__main__':
                 st.success('Done')
 
             st.header('Story points: %d' % prediction)
+            if histories.shape[0] == 0:
+                st.warning('No similar ticket is found in the project historical data. Prediction might not be accurate!')
             st.table(histories)

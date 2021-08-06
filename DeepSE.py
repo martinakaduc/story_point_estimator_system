@@ -37,7 +37,6 @@ class DeepSE():
         self.vocab_size, self.emb_dim = self.emb_weight.shape
         self.max_len = max_len
         self.top_k = 5
-        self.total_weights = self.top_k + sum(range(self.top_k))
 
         self.regres_layer = None
         self.title_emb = tf.compat.v1.placeholder(np.float32, shape = [None, self.max_len, self.emb_dim], name='title_inp')
@@ -45,7 +44,7 @@ class DeepSE():
         self.title_mask = tf.compat.v1.placeholder(np.float32, shape = [None, self.max_len], name='title_mask')
         self.descr_mask = tf.compat.v1.placeholder(np.float32, shape = [None, self.max_len], name='descr_mask')
         self.historical_data = []
-        self.historical_embedding = None
+        self.historical_embedding = {"title": None, "descr": None}
 
         self.init_model(project_name)
         self.get_embedding_db(project_name)
@@ -160,9 +159,12 @@ class DeepSE():
             title_emb = np.reshape(title_emb, (-1, num_features))
             descr_emb = np.reshape(descr_emb, (-1, num_features))
 
-            total_emb = np.concatenate((title_emb, descr_emb), axis=-1)
+            # total_emb = np.concatenate((title_emb, descr_emb), axis=-1)
 
-            distances, indexes = self.historical_embedding.kneighbors(total_emb)
+            distances, title_indexes = self.historical_embedding["title"].radius_neighbors(title_emb)
+            distances, descr_indexes = self.historical_embedding["title"].radius_neighbors(descr_emb)
+            indexes = np.concatenate((title_indexes, descr_indexes), axis=-1)
+
             histories = self._get_histories_by_idx(indexes, return_sp, weighted_histories=True)
 
             return return_sp, histories
@@ -174,18 +176,20 @@ class DeepSE():
         if weighted_histories:
             sample_th = 0
             for neighbor_idxs, sp in zip(indexes, sps):
-                avg_sp = sp
+                avg_sp = sp * 2
+                total_weight = 2
 
                 for i, idx in enumerate(neighbor_idxs[:self.top_k]):
                     avg_sp += int(self.historical_data[idx][-1]) * (self.top_k - i)
+                    total_weight += self.top_k - i
 
-                sps[sample_th] = utils.nearest_fib(avg_sp / self.total_weights)
+                sps[sample_th] = utils.nearest_fib(avg_sp / total_weight)
 
                 sample_th += 1
 
         for neighbor_idxs, sp in zip(indexes, sps):
             histories_one_sample = []
-            for idx in neighbor_idxs:
+            for idx in set(neighbor_idxs):
                 if int(self.historical_data[idx][-1]) == sp:
                     histories_one_sample.append(self.historical_data[idx])
             results.append(histories_one_sample)
@@ -193,11 +197,15 @@ class DeepSE():
         return results
 
     def get_embedding_db(self, project_name):
-        if not os.path.exists("database/embedding/" + project_name + ".pkl"):
+        if not os.path.exists("database/embedding/" + project_name + "_title.pkl") or \
+           not os.path.exists("database/embedding/" + project_name + "_descr.pkl"):
             self._embed_db(project_name)
 
-        with open("database/embedding/" + project_name + ".pkl", "rb") as ef:
-            self.historical_embedding = cPickle.load(ef)
+        with open("database/embedding/" + project_name + "_title.pkl", "rb") as ef:
+            self.historical_embedding["title"] = cPickle.load(ef)
+
+        with open("database/embedding/" + project_name + "_descr.pkl", "rb") as ef:
+            self.historical_embedding["descr"] = cPickle.load(ef)
 
         with open("database/" + project_name + ".csv", 'r', encoding="utf-8") as f:
             csv_reader = csv.reader(f, delimiter=',')
@@ -222,12 +230,19 @@ class DeepSE():
         title_emb = np.reshape(title_emb, (-1, num_features))
         descr_emb = np.reshape(descr_emb, (-1, num_features))
 
-        total_emb = np.concatenate((title_emb, descr_emb), axis=-1)
-        NN = NearestNeighbors(n_neighbors=16, metric="euclidean", n_jobs=-1)
-        NN.fit(total_emb)
+        # total_emb = np.concatenate((title_emb, descr_emb), axis=-1)
+        title_NN = NearestNeighbors(n_neighbors=16, radius=10, metric="euclidean", n_jobs=-1)
+        title_NN.fit(title_emb)
 
-        f = open("database/embedding/" + project_name + ".pkl", "wb")
-        cPickle.dump(NN, f, -1)
+        descr_NN = NearestNeighbors(n_neighbors=16, radius=10, metric="euclidean", n_jobs=-1)
+        descr_NN.fit(descr_emb)
+
+        f = open("database/embedding/" + project_name + "_title.pkl", "wb")
+        cPickle.dump(title_NN, f, -1)
+        f.close()
+
+        f = open("database/embedding/" + project_name + "_descr.pkl", "wb")
+        cPickle.dump(descr_NN, f, -1)
         f.close()
 
 if __name__ == '__main__':
