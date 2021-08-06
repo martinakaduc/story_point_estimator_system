@@ -64,6 +64,7 @@ class DeepSE():
 
     def tokenize(self, sentences):
         # print ('Tokenizing..')
+        sentences = [x.replace('\n', '').replace('\r', '') for x in sentences]
         text = "\n".join(sentences)
         tokenizer = Popen(self.tokenizer_cmd, stdin=PIPE, stdout=PIPE)
         tok_text, _ = tokenizer.communicate(bytes(text.encode("utf-8")))
