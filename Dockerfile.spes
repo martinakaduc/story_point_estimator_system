@@ -1,0 +1,11 @@
+FROM tensorflow/tensorflow:1.14.0-py3
+
+COPY ./ /SPES
+WORKDIR /SPES
+
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+
+EXPOSE 8501
+
+CMD ["streamlit", "run", "app.py"]

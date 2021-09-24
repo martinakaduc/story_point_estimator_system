@@ -1,0 +1,11 @@
+version: "1.0"
+
+services:
+  action:
+    image: spes
+    build:
+      context: ./
+      dockerfile: Dockerfile.spes
+    ports:
+      - ${PORT}:8501
+    command: ["streamlit", "run", "app.py"]

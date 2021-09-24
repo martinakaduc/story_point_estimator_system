@@ -15,3 +15,15 @@ pip install -r requirements.txt
 ```
 streamlit run app.py
 ```
+
+### Deploy with Docker
+Manually deployment
+```
+docker build -t spes -f Dockerfile.spes .
+docker run --name spes -p 8501:8501 -d spes
+```
+
+Or you can use *docker-compose* by setting the *PORT* in [.env](.env) file and then run
+```
+docker-compose up -d
+```
