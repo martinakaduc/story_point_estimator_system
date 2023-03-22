@@ -3,7 +3,7 @@ from inference import list_models_name, get_result
 
 if __name__ == '__main__':
     st.set_page_config(page_title="Story Point Estimaton System", layout="wide")
-    st.image('./static/images/TPS_AI.png')
+    # st.image('./static/images/TPS_AI.png')
     st.title('Story Point Estimaton System')
     st.write('This system takes input of title and description of an issue and estimates the number of story points required to complete it.')
 
